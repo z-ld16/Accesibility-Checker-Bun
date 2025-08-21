@@ -29,7 +29,6 @@ export default tseslint.config([
           message: 'Avoid using console.error(). Remove it before committing.',
         },
       ],
-      '@typescript-eslint/no-empty-object-type': ['off'],
     },
   },
   {

@@ -1,9 +1,9 @@
 import type { ZodRawShape, ZodObject, z } from 'zod/v4'
 
 export type RequestSchema<
-  P extends ZodRawShape = {},
-  B extends ZodRawShape = {},
-  Q extends ZodRawShape = {},
+  P extends ZodRawShape = z.ZodRawShape,
+  B extends ZodRawShape = z.ZodRawShape,
+  Q extends ZodRawShape = z.ZodRawShape,
 > = ZodObject<{
   params?: ZodObject<P>
   body?: ZodObject<B>
