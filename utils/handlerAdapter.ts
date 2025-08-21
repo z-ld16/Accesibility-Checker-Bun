@@ -10,11 +10,11 @@ import { NotFoundError } from '../errors/http.errors'
 export function adaptHandler<T extends RequestSchema, R>(
   controller: (input: InferFlattened<T>) => Promise<R> | R,
   schema: T,
-): (req: unknown) => Promise<R>
+): (req: Request, res: Response) => Promise<R>
 
 export function adaptHandler<R>(
-  controller: (input: undefined) => Promise<R> | R,
-): (req: unknown) => Promise<R>
+  controller: () => Promise<R> | R,
+): (req: Request, res: Response) => Promise<R>
 
 export function adaptHandler<T extends RequestSchema, R>(
   controller: (input: InferFlattened<T> | undefined) => Promise<R> | R,
@@ -23,7 +23,8 @@ export function adaptHandler<T extends RequestSchema, R>(
   return async (req: Request, res: Response) => {
     try {
       if (!schema) {
-        return controller(undefined)
+        const result = await controller(undefined)
+        return res.json(result)
       }
 
       const parsed = schema.parse({
@@ -38,21 +39,21 @@ export function adaptHandler<T extends RequestSchema, R>(
         ...(parsed?.query ?? {}),
       }
 
-      return controller(input)
+      const result = await controller(input)
+
+      return res.json(result)
     } catch (err: unknown) {
+      consola.error(err)
       if (err instanceof ZodError) {
         return res.status(400).json({ error: err })
       }
       if (err instanceof Error) {
-        consola.error(err.message)
-        return res.status(500)
+        return res.status(500).json({ error: err })
       }
       if (err instanceof NotFoundError) {
-        consola.error(err.message)
-        return res.status(404)
+        return res.status(404).json({ error: err })
       }
-      consola.error(err)
-      res.status(500)
+      return res.status(500).json({ error: 'Server Error' })
     }
   }
 }

@@ -5,9 +5,9 @@ export type RequestSchema<
   B extends ZodRawShape = {},
   Q extends ZodRawShape = {},
 > = ZodObject<{
-  params: ZodObject<P>
-  body: ZodObject<B>
-  query: ZodObject<Q>
+  params?: ZodObject<P>
+  body?: ZodObject<B>
+  query?: ZodObject<Q>
 }>
 
 type FlattenSchema<

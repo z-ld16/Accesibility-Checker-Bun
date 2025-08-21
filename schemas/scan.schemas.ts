@@ -17,7 +17,6 @@ export const ScanURLSSchema = z.object({
 })
 
 export const GetScanByIdSchema = z.object({
-  body: z.object({}),
   params: z.object({
     id: z
       .string()
@@ -26,11 +25,9 @@ export const GetScanByIdSchema = z.object({
       })
       .transform(val => new ObjectId(val)),
   }),
-  query: z.object({}),
 })
 
 export const UpdateScanByIdSchema = z.object({
-  body: z.object({}),
   params: z.object({
     id: z
       .string()
@@ -39,11 +36,9 @@ export const UpdateScanByIdSchema = z.object({
       })
       .transform(val => new ObjectId(val)),
   }),
-  query: z.object({}),
 })
 
 export const DeleteScanByIdSchema = z.object({
-  body: z.object({}),
   params: z.object({
     id: z
       .string()
@@ -52,5 +47,4 @@ export const DeleteScanByIdSchema = z.object({
       })
       .transform(val => new ObjectId(val)),
   }),
-  query: z.object({}),
 })

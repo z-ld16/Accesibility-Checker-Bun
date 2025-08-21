@@ -5,5 +5,5 @@ export const getAllScansServices = async () => {
 
   const scans = db?.collection('scans')
 
-  return scans?.find().toArray()
+  return await scans?.find().toArray()
 }
