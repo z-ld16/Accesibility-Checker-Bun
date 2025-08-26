@@ -8,16 +8,17 @@ import type {
   InferFlattened,
   ResponseSchema,
   RequestSchema,
+  HttpResponse,
 } from '../types/types'
-
-import { NotFoundError } from '../errors/http.errors'
 
 export function adaptHandler<
   T extends RequestSchema,
   P extends ResponseSchema,
   R,
 >(
-  controller: (input: InferFlattened<T>) => Promise<R> | R,
+  controller: (
+    input: InferFlattened<T>,
+  ) => Promise<HttpResponse<R>> | HttpResponse<R>,
   schema: {
     request?: T
     response: P
@@ -41,7 +42,7 @@ export function adaptHandler<
   P extends ResponseSchema,
   R,
 >(
-  controller: () => Promise<R> | R,
+  controller: () => Promise<HttpResponse<R>> | HttpResponse<R>,
   schema: {
     request: T
     response: P
@@ -53,7 +54,9 @@ export function adaptHandler<
   P extends ResponseSchema,
   R,
 >(
-  controller: (input: InferFlattened<T> | undefined) => Promise<R> | R,
+  controller: (
+    input: InferFlattened<T> | undefined,
+  ) => Promise<HttpResponse<R>> | HttpResponse<R>,
   schema: {
     request?: T
     response: P
@@ -62,10 +65,9 @@ export function adaptHandler<
   return async (req: Request, res: Response) => {
     try {
       const input = parseInput(req, schema.request)
-      const result = await controller(input)
-      return res.json(result)
+      const { statusCode, data } = await controller(input)
+      return res.status(statusCode).json(data)
     } catch (err: unknown) {
-      consola.error(err)
       if (err instanceof ZodError) {
         return res.status(400).json({
           error: {
@@ -73,9 +75,7 @@ export function adaptHandler<
           },
         })
       }
-      if (err instanceof NotFoundError) {
-        return res.status(404).json({ error: err })
-      }
+      consola.error(err)
       return res.status(500).json({ error: 'Server Error' })
     }
   }

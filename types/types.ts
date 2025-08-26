@@ -30,3 +30,8 @@ type FlattenSchema<
 export type InferFlattened<T extends ZodObject<ZodRawShape>> = FlattenSchema<
   z.infer<T>
 >
+
+export type HttpResponse<T> = {
+  statusCode: number
+  data: T
+}
