@@ -1,4 +1,4 @@
-import type { ZodRawShape, ZodObject, z } from 'zod/v4'
+import type { ZodRawShape, ZodObject, ZodArray, z } from 'zod/v4'
 
 export type RequestSchema<
   P extends ZodRawShape = z.ZodRawShape,
@@ -9,6 +9,19 @@ export type RequestSchema<
   body?: ZodObject<B>
   query?: ZodObject<Q>
 }>
+
+export type ResponseSchema<P extends ZodRawShape = z.ZodRawShape> = ZodObject<{
+  data: ZodObject<P>
+}>
+
+export type PaginatedResponseSchema<P extends ZodRawShape = z.ZodRawShape> =
+  ZodObject<{
+    data: ZodArray<ZodObject<P>>
+    pageInfo: z.ZodObject<{
+      pages: z.ZodNumber
+      currentPage: z.ZodNumber
+    }>
+  }>
 
 type FlattenSchema<
   T extends { params?: object; body?: object; query?: object },

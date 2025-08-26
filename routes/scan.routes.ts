@@ -7,23 +7,25 @@ import {
   getScanByIdController,
   scanByUrlController,
 } from '../controllers/scan/scan.controller'
-import {
-  DeleteScanByIdSchema,
-  UpdateScanByIdSchema,
-  GetScanByIdSchema,
-  ScanURLSSchema,
-} from '../schemas/scan.schemas'
+import { UpdateScanByIdSchemas } from '../schemas/scans/update-by-id.schema'
+import { DeleteScanByIdSchemas } from '../schemas/scans/delete-by-id.schema'
+import { GetScanByIdSchemas } from '../schemas/scans/get-by-id.schema'
+import { GetAllScansSchemas } from '../schemas/scans/get-all.schema'
+import { ScanURLSSchemas } from '../schemas/scans/scan-urls.schema'
 import { adaptHandler } from '../utils/handlerAdapter'
 
 const router = Router()
 
-router.get('/list', adaptHandler(getAllScansController))
-router.get('/:id', adaptHandler(getScanByIdController, GetScanByIdSchema))
-router.post('/', adaptHandler(scanByUrlController, ScanURLSSchema))
-router.put('/:id', adaptHandler(updateScanByIdController, UpdateScanByIdSchema))
+router.get('/list', adaptHandler(getAllScansController, GetAllScansSchemas))
+router.get('/:id', adaptHandler(getScanByIdController, GetScanByIdSchemas))
+router.post('/', adaptHandler(scanByUrlController, ScanURLSSchemas))
+router.put(
+  '/:id',
+  adaptHandler(updateScanByIdController, UpdateScanByIdSchemas),
+)
 router.delete(
   '/:id',
-  adaptHandler(deleteScanByIdController, DeleteScanByIdSchema),
+  adaptHandler(deleteScanByIdController, DeleteScanByIdSchemas),
 )
 
 export default router
