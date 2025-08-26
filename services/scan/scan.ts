@@ -4,7 +4,11 @@ import axe from 'axe-core'
 import { mongoConnect } from '../db/mongo-connect'
 
 export async function runAccessibilityScan(urls: string[]) {
-  const browser = await puppeteer.launch({ headless: true })
+  const browser = await puppeteer.launch({
+    headless: true,
+    executablePath: '/usr/bin/chromium',
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  })
   const page = await browser.newPage()
   const db = await mongoConnect()
 
