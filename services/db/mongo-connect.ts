@@ -1,11 +1,11 @@
 import { MongoClient } from 'mongodb'
 import consola from 'consola'
 
-import { MONGO_URI, DB_NAME } from '../../config'
-
-const client = new MongoClient(MONGO_URI)
+import { loadEnv } from '../../config/environment-variables'
 
 export async function mongoConnect() {
+  const { MONGO_URI, DB_NAME } = loadEnv()
+  const client = new MongoClient(MONGO_URI)
   try {
     await client.connect()
     consola.log('Connected successfully to MongoDB')
