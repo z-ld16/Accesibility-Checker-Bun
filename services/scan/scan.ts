@@ -1,7 +1,8 @@
 import puppeteer from 'puppeteer'
 import axe from 'axe-core'
 
-import { mongoConnect } from '../db/mongo-connect'
+import { getCollection } from '../../utils/db'
+import { COLLECTIONS } from '../../config'
 
 export async function runAccessibilityScan(urls: string[]) {
   const browser = await puppeteer.launch({
@@ -10,7 +11,7 @@ export async function runAccessibilityScan(urls: string[]) {
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   })
   const page = await browser.newPage()
-  const db = await mongoConnect()
+  const scans = await getCollection(COLLECTIONS.SCANS)
 
   for (const url of urls) {
     await page.goto(url, { waitUntil: 'networkidle2' })
@@ -20,8 +21,7 @@ export async function runAccessibilityScan(urls: string[]) {
     const results = await page.evaluate(async () => {
       return await axe.run()
     })
-    const scans = db?.collection('scans')
-    scans?.updateOne(
+    scans.updateOne(
       { url },
       {
         $set: {

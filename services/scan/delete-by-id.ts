@@ -1,11 +1,10 @@
 import type { ObjectId } from 'mongodb'
 
-import { mongoConnect } from '../db/mongo-connect'
+import { getCollection } from '../../utils/db'
+import { COLLECTIONS } from '../../config'
 
 export async function deleteScanByIdService(id: ObjectId) {
-  const db = await mongoConnect()
+  const scans = await getCollection(COLLECTIONS.SCANS)
 
-  const scans = db?.collection('scans')
-
-  return scans?.deleteOne({ _id: id })
+  return scans.deleteOne({ _id: id })
 }

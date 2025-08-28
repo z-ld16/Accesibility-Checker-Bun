@@ -1,11 +1,10 @@
 import { CouldntGetCountError } from '../../errors/services.errors'
-import { mongoConnect } from '../db/mongo-connect'
+import { getCollection } from '../../utils/db'
+import { COLLECTIONS } from '../../config'
 
 export const getAllScansServices = async (limit: number, offset: number) => {
-  const db = await mongoConnect()
-
-  const scans = db?.collection('scans')
-  const count = await scans?.countDocuments()
+  const scans = await getCollection(COLLECTIONS.SCANS)
+  const count = await scans.countDocuments()
 
   if (!count) {
     throw new CouldntGetCountError('Couldnt get count error')

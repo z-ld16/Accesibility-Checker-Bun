@@ -11,6 +11,9 @@ import type {
   HttpResponse,
 } from '../types/types'
 
+import { unauthorized, serverError, badRequest } from './http-responses'
+import { UnauthorizedError } from '../errors/services.errors'
+
 export function adaptHandler<
   T extends RequestSchema,
   P extends ResponseSchema,
@@ -30,7 +33,9 @@ export function adaptHandler<
   P extends PaginatedResponseSchema,
   R,
 >(
-  controller: (input: InferFlattened<T>) => Promise<R> | R,
+  controller: (
+    input: InferFlattened<T>,
+  ) => Promise<HttpResponse<R>> | HttpResponse<R>,
   schema: {
     request: T
     response: P
@@ -68,15 +73,19 @@ export function adaptHandler<
       const { statusCode, data } = await controller(input)
       return res.status(statusCode).json(data)
     } catch (err: unknown) {
-      if (err instanceof ZodError) {
-        return res.status(400).json({
-          error: {
-            message: z.formatError(err),
-          },
-        })
-      }
       consola.error(err)
-      return res.status(500).json({ error: 'Server Error' })
+      if (err instanceof UnauthorizedError) {
+        const { statusCode, data } = unauthorized(err)
+        return res.status(statusCode).json(data)
+      }
+      if (err instanceof ZodError) {
+        const { statusCode } = badRequest(err)
+        return res.status(statusCode).json({ data: z.formatError(err) })
+      }
+      const { statusCode, data } = serverError(
+        new Error('Server error contact support'),
+      )
+      return res.status(statusCode).json({ error: data })
     }
   }
 }

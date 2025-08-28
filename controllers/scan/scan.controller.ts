@@ -1,3 +1,5 @@
+import { ZodError } from 'zod'
+
 import type { UpdateScanByIdSchemas } from '../../schemas/scans/update-by-id.schema'
 import type { DeleteScanByIdSchemas } from '../../schemas/scans/delete-by-id.schema'
 import type { ScanURLSSchemas } from '../../schemas/scans/scan-urls.schema'
@@ -7,10 +9,10 @@ import { GetScanByIdSchemas } from '../../schemas/scans/get-by-id.schema'
 import { getAllScansServices } from '../../services/scan/get-all.service'
 import { deleteScanByIdService } from '../../services/scan/delete-by-id'
 import { GetAllScansSchemas } from '../../schemas/scans/get-all.schema'
+import { serverError, notFound, ok } from '../../utils/http-responses'
+import { NotFoundError, ServerError } from '../../errors/http.errors'
 import { getScanByIdService } from '../../services/scan/get-by-id'
 import { runAccessibilityScan } from '../../services/scan/scan'
-import { notFound, ok } from '../../utils/http-responses'
-import { NotFoundError } from '../../errors/http.errors'
 import { paginate } from '../../utils/pagination'
 
 export const scanByUrlController = async (
@@ -34,6 +36,9 @@ export const getAllScansController = async ({
     if (error instanceof NotFoundError) {
       return notFound(new Error('Scan not found'))
     }
+    if (error instanceof ZodError) {
+      return serverError(new ServerError())
+    }
     throw error
   }
 }
@@ -51,6 +56,9 @@ export const getScanByIdController = async (
   } catch (error) {
     if (error instanceof NotFoundError) {
       return notFound(new Error('Scan not found'))
+    }
+    if (error instanceof ZodError) {
+      return serverError(new ServerError())
     }
     throw error
   }
@@ -72,6 +80,9 @@ export const updateScanByIdController = async (
     if (error instanceof NotFoundError) {
       return notFound(new Error('Scan not found'))
     }
+    if (error instanceof ZodError) {
+      return serverError(new ServerError())
+    }
     throw error
   }
 }
@@ -85,6 +96,9 @@ export const deleteScanByIdController = async (
   } catch (error) {
     if (error instanceof NotFoundError) {
       return notFound(new Error('Scan not found'))
+    }
+    if (error instanceof ZodError) {
+      return serverError(new ServerError())
     }
     throw error
   }
