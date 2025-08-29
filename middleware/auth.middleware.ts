@@ -1,12 +1,20 @@
 import type { NextFunction, Response, Request } from 'express'
 
+import { ObjectId } from 'mongodb'
 import consola from 'consola'
 
+import { TokenPayloadSchema } from '../schemas/auth/auth.schemas'
 import { UnauthorizedError } from '../errors/services.errors'
 import { verifyToken } from '../services/auth/auth.service'
 import { unauthorized } from '../utils/http-responses'
+import { getCollection } from '../utils/db'
+import { COLLECTIONS } from '../config'
 
-export function checkToken(req: Request, res: Response, next: NextFunction) {
+export async function checkToken(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   try {
     const token = req.headers['authorization']
 
@@ -14,9 +22,29 @@ export function checkToken(req: Request, res: Response, next: NextFunction) {
       throw new UnauthorizedError('Token is missing')
     }
 
-    const decodedToken = verifyToken(token)
+    const rawDecodedToken = await verifyToken(token)
 
-    req.body.decodedToken = decodedToken
+    consola.log(rawDecodedToken)
+
+    const decodedToken = TokenPayloadSchema.parse(rawDecodedToken)
+
+    const users = await getCollection(COLLECTIONS.USERS)
+
+    const user = await users.findOne({
+      _id: new ObjectId(decodedToken.userId),
+    })
+
+    if (!user || token !== user.token) {
+      throw new UnauthorizedError('User doesnt exist')
+    }
+
+    if (!req.body) {
+      req.body = {
+        tokenData: decodedToken,
+      }
+    }
+
+    req.body.tokenData = decodedToken
 
     next()
   } catch (error) {

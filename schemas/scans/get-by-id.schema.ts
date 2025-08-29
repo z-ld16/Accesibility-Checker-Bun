@@ -14,7 +14,7 @@ const GetScanByIdRequestSchema = z.object({
 
 const GetScanByIdResponseSchema = z.object({
   data: z.object({
-    _id: z.instanceof(ObjectId).transform(val => val.toString()),
+    _id: z.instanceof(ObjectId).transform(val => val.toHexString()),
     url: z.string(),
     createdAt: z.iso.datetime(),
     updatedAt: z.iso.datetime(),

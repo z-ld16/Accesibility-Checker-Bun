@@ -2,7 +2,13 @@ import consola from 'consola'
 
 import { EnvVariablesSchema } from '../schemas/config/env.schema'
 
-const requiredVars = ['MONGO_URI', 'PORT', 'JWT_SECRET', 'DB_NAME']
+const requiredVars = [
+  'MONGO_URI',
+  'PORT',
+  'JWT_SECRET',
+  'DB_NAME',
+  'JWT_EXPIRES_IN_SECONDS',
+]
 
 type RequiredEnv = {
   [K in (typeof requiredVars)[number]]: string

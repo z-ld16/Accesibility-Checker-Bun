@@ -69,11 +69,11 @@ export function adaptHandler<
 ) {
   return async (req: Request, res: Response) => {
     try {
+      consola.log(req.body)
       const input = parseInput(req, schema.request)
       const { statusCode, data } = await controller(input)
       return res.status(statusCode).json(data)
     } catch (err: unknown) {
-      consola.error(err)
       if (err instanceof UnauthorizedError) {
         const { statusCode, data } = unauthorized(err)
         return res.status(statusCode).json(data)

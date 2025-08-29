@@ -5,7 +5,11 @@ services:
     ports:
       - "3000:3000"
     environment:
-      MONGO_URI: "mongodb://mongo:27017/mydatabase"
+      - PORT=${PORT}
+      - MONGO_URI=${MONGO_URI}
+      - DB_NAME=${DB_NAME}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN_SECONDS=${JWT_EXPIRES_IN_SECONDS}
     depends_on:
       - mongo
 

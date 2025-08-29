@@ -8,4 +8,8 @@ export const EnvVariablesSchema = z.object({
     .string()
     .refine(val => !isNaN(Number(val)))
     .transform(val => Number(val)),
+  JWT_EXPIRES_IN_SECONDS: z
+    .string()
+    .refine(val => !isNaN(Number(val)))
+    .transform(val => Number(val)),
 })
