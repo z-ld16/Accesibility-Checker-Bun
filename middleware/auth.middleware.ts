@@ -3,6 +3,8 @@ import type { NextFunction, Response, Request } from 'express'
 import { ObjectId } from 'mongodb'
 import consola from 'consola'
 
+import type { Users } from '../types/types'
+
 import { TokenPayloadSchema } from '../schemas/auth/auth.schemas'
 import { UnauthorizedError } from '../errors/services.errors'
 import { verifyToken } from '../services/auth/auth.service'
@@ -28,7 +30,7 @@ export async function checkToken(
 
     const decodedToken = TokenPayloadSchema.parse(rawDecodedToken)
 
-    const users = await getCollection(COLLECTIONS.USERS)
+    const users = await getCollection<Users>(COLLECTIONS.USERS)
 
     const user = await users.findOne({
       _id: new ObjectId(decodedToken.userId),

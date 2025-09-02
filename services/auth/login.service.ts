@@ -1,7 +1,7 @@
 import consola from 'consola'
 
 import type { LoginUserSchemas } from '../../schemas/users/login-user.schema'
-import type { InferFlattened } from '../../types/types'
+import type { InferFlattened, Users } from '../../types/types'
 
 import { InvalidPasswordError } from '../../errors/users-services.errors'
 import { generateToken } from '../auth/auth.service'
@@ -12,7 +12,7 @@ export async function loginUserService({
   username,
   password,
 }: InferFlattened<typeof LoginUserSchemas.request>) {
-  const users = await getCollection(COLLECTIONS.USERS)
+  const users = await getCollection<Users>(COLLECTIONS.USERS)
 
   const user = await users.findOne({ username })
 

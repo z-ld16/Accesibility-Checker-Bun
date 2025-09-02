@@ -1,5 +1,5 @@
 import type { CreateUserSchemas } from '../../schemas/users/users.schemas'
-import type { InferFlattened } from '../../types/types'
+import type { InferFlattened, Users } from '../../types/types'
 
 import { UsernameAlreadyExistsError } from '../../errors/users-services.errors'
 import { NotFoundError } from '../../errors/http.errors'
@@ -10,7 +10,7 @@ export async function createUserService({
   username,
   password,
 }: InferFlattened<typeof CreateUserSchemas.request>) {
-  const users = await getCollection(COLLECTIONS.USERS)
+  const users = await getCollection<Users>(COLLECTIONS.USERS)
 
   if (!users) {
     throw new NotFoundError()

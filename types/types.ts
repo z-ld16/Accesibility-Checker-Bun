@@ -50,3 +50,12 @@ type Violations = {
   impact: string
   description: string
 }
+
+export type Users = {
+  _id?: ObjectId
+  username: string
+  password: string
+  createdAt?: string
+  updatedAt?: string
+  token?: string
+}
