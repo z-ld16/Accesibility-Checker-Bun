@@ -1,4 +1,5 @@
 import type { ZodRawShape, ZodObject, ZodArray, z } from 'zod/v4'
+import type { ObjectId } from 'mongodb'
 
 export type RequestSchema<
   P extends ZodRawShape = z.ZodRawShape,
@@ -34,4 +35,18 @@ export type InferFlattened<T extends ZodObject<ZodRawShape>> = FlattenSchema<
 export type HttpResponse<T> = {
   statusCode: number
   data: T
+}
+
+export type Scans = {
+  _id: ObjectId
+  url: string
+  createdAt: string
+  updatedAt: string
+  violations: Violations[]
+}
+
+type Violations = {
+  id: string
+  impact: string
+  description: string
 }

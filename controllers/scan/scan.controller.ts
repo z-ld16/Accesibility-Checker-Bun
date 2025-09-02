@@ -5,6 +5,7 @@ import type { DeleteScanByIdSchemas } from '../../schemas/scans/delete-by-id.sch
 import type { ScanURLSSchemas } from '../../schemas/scans/scan-urls.schema'
 import type { InferFlattened } from '../../types/types'
 
+import { exportScansCSVService } from '../../services/scan/export-scans.service'
 import { GetScanByIdSchemas } from '../../schemas/scans/get-by-id.schema'
 import { getAllScansServices } from '../../services/scan/get-all.service'
 import { deleteScanByIdService } from '../../services/scan/delete-by-id'
@@ -102,4 +103,8 @@ export const deleteScanByIdController = async (
     }
     throw error
   }
+}
+
+export const exportScansController = async () => {
+  return await exportScansCSVService()
 }
