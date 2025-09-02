@@ -16,13 +16,13 @@ export const exportScansCSVService = async () => {
   const stringifier = stringify({
     header: true,
     columns: [
-      'Id',
-      'Url',
-      'Date Created',
-      'Date Updated',
-      'Violation Id',
-      'Violation Impact',
-      'Violation Description',
+      '_id',
+      'url',
+      'createdAt',
+      'updatedAt',
+      'violationId',
+      'violationImpact',
+      'violationDescription',
     ],
   })
 
@@ -30,17 +30,21 @@ export const exportScansCSVService = async () => {
 }
 
 async function* generateScanRows(cursor: FindCursor<Scans>) {
-  for await (const scan of cursor) {
-    for (const v of scan.violations) {
-      yield {
-        _id: scan._id.toHexString(),
-        url: scan.url,
-        createdAt: scan.createdAt,
-        updatedAt: scan.updatedAt,
-        violationId: v.id,
-        violationImpact: v.impact,
-        violationDescription: v.description,
+  try {
+    for await (const scan of cursor) {
+      for (const v of scan.violations) {
+        yield {
+          _id: scan._id.toHexString(),
+          url: scan.url,
+          createdAt: scan.createdAt,
+          updatedAt: scan.updatedAt,
+          violationId: v.id,
+          violationImpact: v.impact,
+          violationDescription: v.description,
+        }
       }
     }
+  } finally {
+    cursor.close()
   }
 }
