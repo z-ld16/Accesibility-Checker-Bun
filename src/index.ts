@@ -1,10 +1,10 @@
 import express from 'express'
 import consola from 'consola'
 
-import { loadEnv } from './src/config/environment-variables.ts'
-import usersRoutes from './src/routes/users.routes.ts'
-import scanRoutes from './src/routes/scan.routes.ts'
-import authRoutes from './src/routes/auth.routes.ts'
+import { loadEnv } from './config/environment-variables.ts'
+import usersRoutes from './routes/users.routes.ts'
+import scanRoutes from './routes/scan.routes.ts'
+import authRoutes from './routes/auth.routes.ts'
 
 const { PORT } = loadEnv()
 const app = express()

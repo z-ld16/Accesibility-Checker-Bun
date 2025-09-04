@@ -12,7 +12,7 @@ import { COLLECTIONS } from '../../src/config'
 import { mockDB } from '../utils/mockDb'
 import { seedDb } from '../utils/seedDb'
 
-describe('GET:/scans/:id', () => {
+describe('DELETE:/scan/:id', () => {
   let port: number
   let db: Db
   let dispose: () => Promise<void>

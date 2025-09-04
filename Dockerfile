@@ -1,4 +1,5 @@
-FROM oven/bun:1 as base
+# Base image with Bun and Chromium
+FROM oven/bun:1 AS base
 WORKDIR /usr/src/app
 
 RUN apt-get update && apt-get install -y \
@@ -10,26 +11,20 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium 
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
-FROM base AS install
-RUN mkdir -p /temp/dev
-COPY package.json bun.lock /temp/dev/
-RUN cd /temp/dev && bun install --frozen-lockfile
+WORKDIR /usr/src/app
 
-RUN mkdir -p /temp/prod
-COPY package.json bun.lock /temp/prod/
-RUN cd /temp/prod && bun install --frozen-lockfile --production
+COPY package.json bun.lock ./
+RUN bun install --frozen-lockfile
 
-FROM install AS prerelease
-COPY --from=install /temp/dev/node_modules node_modules
-COPY . .
+COPY src ./src
 
-FROM base AS release
-COPY --from=install /temp/prod/node_modules node_modules
-COPY --from=prerelease /usr/src/app .
+ENV NODE_ENV=production
+
+RUN chown -R bun:bun ./src 
 
 USER bun
-EXPOSE 3000/tcp
+EXPOSE 3000
 CMD ["bun", "run", "dev"]
 

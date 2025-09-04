@@ -1,6 +1,7 @@
 import type { Response, Request } from 'express'
 
 import z, { ZodError } from 'zod/v4'
+import consola from 'consola'
 
 import type {
   PaginatedResponseSchema,
@@ -72,6 +73,7 @@ export function adaptHandler<
       const { statusCode, data } = await controller(input)
       return res.status(statusCode).json(data)
     } catch (err: unknown) {
+      consola.log(err)
       if (err instanceof ZodError) {
         const { statusCode, message } = APPLICATION_ERRORS.GENERIC.INVALID_INPUT
         return res.status(statusCode).json({
@@ -84,7 +86,7 @@ export function adaptHandler<
       if (err instanceof ApplicationError) {
         return res
           .status(err.statusCode)
-          .json({ error: { data: { message: err.message } } })
+          .json({ data: { message: err.message } })
       }
     }
   }

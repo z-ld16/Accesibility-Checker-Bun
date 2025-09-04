@@ -1,3 +1,5 @@
+import consola from 'consola'
+
 import type { LoginUserSchemas } from '../../schemas/users/login-user.schema'
 import type { InferFlattened, Users } from '../../types/types'
 
@@ -27,7 +29,7 @@ export async function loginUserService({
 
   const token = await generateToken(user._id.toHexString())
 
-  users.updateOne(
+  await users.updateOne(
     { _id: user._id },
     {
       $set: {

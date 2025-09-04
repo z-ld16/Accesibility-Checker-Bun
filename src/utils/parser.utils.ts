@@ -8,6 +8,7 @@ export function parseOutput<T extends ZodType = ZodType>(
   schema: T,
 ) {
   const result = schema.safeParse(payload)
+
   if (!result.success) {
     throwError(APPLICATION_ERRORS.GENERIC.INVALID_OUTPUT)
   }

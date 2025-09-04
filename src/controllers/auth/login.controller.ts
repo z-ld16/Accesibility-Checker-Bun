@@ -9,5 +9,7 @@ export const loginUserController = async (
   input: InferFlattened<typeof LoginUserSchemas.request>,
 ) => {
   const userToken = await loginUserService(input)
-  return ok(parseOutput({ data: userToken }, LoginUserSchemas.response))
+  return ok(
+    parseOutput({ data: { token: userToken } }, LoginUserSchemas.response),
+  )
 }

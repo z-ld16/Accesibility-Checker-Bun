@@ -1,7 +1,6 @@
 import type { Db } from 'mongodb'
 
-import { beforeAll, afterAll, describe, expect, mock, it } from 'bun:test'
-import { afterEach } from 'node:test'
+import { beforeAll, afterAll, describe, expect, jest, it } from 'bun:test'
 
 import { APPLICATION_ERRORS } from '../../src/errors/errors'
 import { createTestApp } from '../utils/create-test-app'
@@ -13,7 +12,7 @@ import { COLLECTIONS } from '../../src/config'
 import { mockDB } from '../utils/mockDb'
 import { seedDb } from '../utils/seedDb'
 
-describe('GET:/scan/:id', () => {
+describe('PUT:/scan/:id', () => {
   let port: number
   let db: Db
   let dispose: () => Promise<void>
@@ -30,15 +29,14 @@ describe('GET:/scan/:id', () => {
     await dispose()
   })
 
-  afterEach(async () => {
-    mock.clearAllMocks()
-  })
-
   const endpoint = '/scan/'
 
   it('should return unauthorized cause the token is missing', async () => {
     const result = await fetch(
       buildBasePath(port) + endpoint + scanSeeds[0]?._id,
+      {
+        method: 'put',
+      },
     )
     expect(result.status).toBe(APPLICATION_ERRORS.AUTH.TOKEN_MISSING.statusCode)
     expect(await result.json()).toEqual({
@@ -48,7 +46,7 @@ describe('GET:/scan/:id', () => {
     })
   })
 
-  it('should return scan', async () => {
+  it('should update scan', async () => {
     const validUser = await getValidUser(db)
 
     const result = await fetch(
@@ -57,6 +55,7 @@ describe('GET:/scan/:id', () => {
         headers: {
           Authorization: `${validUser.token}`,
         },
+        method: 'put',
       },
     )
     expect(result.status).toBe(200)
@@ -87,6 +86,7 @@ describe('GET:/scan/:id', () => {
         headers: {
           Authorization: `${validUser.token}`,
         },
+        method: 'put',
       },
     )
     expect(result.status).toBe(
