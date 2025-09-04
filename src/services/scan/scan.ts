@@ -40,6 +40,6 @@ export async function runAccessibilityScan(urls: string[]) {
   await browser.close()
 
   return {
-    message: 'Scan ran succesfully',
+    message: 'Scan ran successfully',
   }
 }

@@ -35,7 +35,11 @@ router.get(
   checkToken,
   adaptHandler(getScanByIdController, GetScanByIdSchemas),
 )
-router.post('/', checkToken, adaptHandler(scanByUrlController, ScanURLSSchemas))
+router.post(
+  '/scan',
+  checkToken,
+  adaptHandler(scanByUrlController, ScanURLSSchemas),
+)
 router.put(
   '/scan/:id',
   checkToken,

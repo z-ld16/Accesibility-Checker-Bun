@@ -17,7 +17,8 @@ import { ok } from '../../utils/http-responses'
 export const scanByUrlController = async (
   input: InferFlattened<typeof ScanURLSSchemas.request>,
 ) => {
-  return ok(await runAccessibilityScan(input.urls))
+  // TODO: add schema verification
+  return ok({ data: await runAccessibilityScan(input.urls) })
 }
 
 export const getAllScansController = async ({

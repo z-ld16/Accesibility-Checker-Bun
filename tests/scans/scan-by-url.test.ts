@@ -16,12 +16,10 @@ import { createTestApp } from '../utils/create-test-app'
 import { buildBasePath } from '../utils/build-base-path'
 import { getValidUser } from '../utils/get-valid-user'
 import scanRoutes from '../../src/routes/scan.routes'
-import { scanSeeds } from '../utils/seeds/scan-seed'
-import { COLLECTIONS } from '../../src/config'
 import { mockDB } from '../utils/mockDb'
 import { seedDb } from '../utils/seedDb'
 
-describe('PUT:/scan/:id', () => {
+describe('POST:/scan', () => {
   spyOn(puppeteer, 'launch').mockResolvedValue({
     newPage: jest.fn().mockResolvedValue({
       goto: jest.fn().mockResolvedValue(undefined),
@@ -66,15 +64,18 @@ describe('PUT:/scan/:id', () => {
     await dispose()
   })
 
-  const endpoint = '/scan/'
+  const endpoint = '/scan'
 
   it('should return unauthorized cause the token is missing', async () => {
-    const result = await fetch(
-      buildBasePath(port) + endpoint + scanSeeds[0]?._id,
-      {
-        method: 'put',
+    const result = await fetch(buildBasePath(port) + endpoint, {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    )
+      body: JSON.stringify({
+        urls: ['www.google.com'],
+      }),
+    })
     expect(result.status).toBe(APPLICATION_ERRORS.AUTH.TOKEN_MISSING.statusCode)
     expect(await result.json()).toEqual({
       data: {
@@ -83,56 +84,58 @@ describe('PUT:/scan/:id', () => {
     })
   })
 
-  it('should update scan', async () => {
+  it('should throw error due to bad url formatting', async () => {
     const validUser = await getValidUser(db)
 
-    const result = await fetch(
-      buildBasePath(port) + endpoint + scanSeeds[0]?._id,
-      {
-        headers: {
-          Authorization: `${validUser.token}`,
-        },
-        method: 'put',
+    const result = await fetch(buildBasePath(port) + endpoint, {
+      headers: {
+        Authorization: `${validUser.token}`,
+        'Content-Type': 'application/json',
       },
-    )
-    expect(result.status).toBe(200)
+      method: 'post',
+      body: JSON.stringify({
+        urls: ['www.google.com'],
+      }),
+    })
     expect(await result.json()).toEqual({
       data: {
-        _id: '68ae0db703b87ae1f00f6f0a',
-        createdAt: expect.any(String),
-        updatedAt: expect.any(String),
-        url: 'https://www.google.com',
-        violations: [
-          {
-            description:
-              'Ensures the contrast between foreground and background colors meets WCAG 2 AA contrast ratio thresholds',
-            id: 'color-contrast',
-            impact: 'serious',
+        message: 'Input is invalid',
+        stack: {
+          _errors: [],
+          body: {
+            _errors: [],
+            urls: {
+              '0': {
+                _errors: ['Invalid HTTP/HTTPS URL'],
+              },
+              _errors: [],
+            },
           },
-        ],
+        },
       },
     })
+    expect(result.status).toBe(400)
   })
 
-  it('should return not found', async () => {
+  it('should run scan', async () => {
     const validUser = await getValidUser(db)
-    db.collection(COLLECTIONS.SCANS).deleteOne({ _id: scanSeeds[0]?._id })
-    const result = await fetch(
-      buildBasePath(port) + endpoint + scanSeeds[0]?._id,
-      {
-        headers: {
-          Authorization: `${validUser.token}`,
-        },
-        method: 'put',
+
+    const result = await fetch(buildBasePath(port) + endpoint, {
+      headers: {
+        Authorization: `${validUser.token}`,
+        'Content-Type': 'application/json',
       },
-    )
-    expect(result.status).toBe(
-      APPLICATION_ERRORS.SCANS.NOT_FOUND_ERROR.statusCode,
-    )
+      method: 'post',
+      body: JSON.stringify({
+        urls: ['https://www.google.com'],
+      }),
+    })
     expect(await result.json()).toEqual({
       data: {
-        message: APPLICATION_ERRORS.SCANS.NOT_FOUND_ERROR.message,
+        message: 'Scan ran successfully',
       },
     })
+
+    expect(result.status).toBe(200)
   })
 })
