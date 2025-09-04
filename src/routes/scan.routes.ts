@@ -21,28 +21,28 @@ import { adaptHandler } from '../utils/handler-adapter'
 const router = Router()
 
 router.get(
-  '/list',
+  '/scan/list',
   checkToken,
   adaptHandler(getAllScansController, GetAllScansSchemas),
 )
 router.get(
-  '/list/download',
+  '/scan/list/download',
   checkToken,
   adaptStreamHandler(exportScansController, ExportScansSchemas),
 )
 router.get(
-  '/:id',
+  '/scan/:id',
   checkToken,
   adaptHandler(getScanByIdController, GetScanByIdSchemas),
 )
 router.post('/', checkToken, adaptHandler(scanByUrlController, ScanURLSSchemas))
 router.put(
-  '/:id',
+  '/scan/:id',
   checkToken,
   adaptHandler(updateScanByIdController, UpdateScanByIdSchemas),
 )
 router.delete(
-  '/:id',
+  '/scan/:id',
   checkToken,
   adaptHandler(deleteScanByIdController, DeleteScanByIdSchemas),
 )

@@ -6,6 +6,6 @@ import { adaptHandler } from '../utils/handler-adapter'
 
 const router = Router()
 
-router.post('/', adaptHandler(createUserController, CreateUserSchemas))
+router.post('/users', adaptHandler(createUserController, CreateUserSchemas))
 
 export default router

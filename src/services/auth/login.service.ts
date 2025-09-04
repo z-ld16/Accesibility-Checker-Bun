@@ -1,9 +1,8 @@
-import consola from 'consola'
-
 import type { LoginUserSchemas } from '../../schemas/users/login-user.schema'
 import type { InferFlattened, Users } from '../../types/types'
 
-import { InvalidPasswordError } from '../../errors/users-services.errors'
+import { APPLICATION_ERRORS } from '../../errors/errors'
+import { throwError } from '../../utils/errors.utils'
 import { generateToken } from '../auth/auth.service'
 import { getCollection } from '../../utils/db'
 import { COLLECTIONS } from '../../config'
@@ -17,16 +16,15 @@ export async function loginUserService({
   const user = await users.findOne({ username })
 
   if (!user) {
-    throw new InvalidPasswordError('Invalid password or user doesnt exists')
+    throwError(APPLICATION_ERRORS.USERS.WRONG_PASSWORD)
   }
 
   const validPassword = Bun.password.verify(password, user.password)
 
   if (!validPassword) {
-    throw new InvalidPasswordError('Invalid password or user doesnt exists')
+    throwError(APPLICATION_ERRORS.USERS.WRONG_PASSWORD)
   }
 
-  consola.log(user._id.toHexString())
   const token = await generateToken(user._id.toHexString())
 
   users.updateOne(

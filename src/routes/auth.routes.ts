@@ -8,9 +8,9 @@ import { checkToken } from '../middleware/auth.middleware'
 import { adaptHandler } from '../utils/handler-adapter'
 
 const router = Router()
-router.post('/login', adaptHandler(loginUserController, LoginUserSchemas))
+router.post('/auth/login', adaptHandler(loginUserController, LoginUserSchemas))
 router.post(
-  '/logout',
+  '/auth/logout',
   checkToken,
   adaptHandler(logoutUserController, LogoutUserSchemas),
 )

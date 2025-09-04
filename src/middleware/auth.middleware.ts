@@ -1,14 +1,13 @@
 import type { NextFunction, Response, Request } from 'express'
 
 import { ObjectId } from 'mongodb'
-import consola from 'consola'
 
 import type { Users } from '../types/types'
 
+import { ApplicationError, throwError } from '../utils/errors.utils'
 import { TokenPayloadSchema } from '../schemas/auth/auth.schemas'
-import { UnauthorizedError } from '../errors/services.errors'
 import { verifyToken } from '../services/auth/auth.service'
-import { unauthorized } from '../utils/http-responses'
+import { APPLICATION_ERRORS } from '../errors/errors'
 import { getCollection } from '../utils/db'
 import { COLLECTIONS } from '../config'
 
@@ -21,12 +20,10 @@ export async function checkToken(
     const token = req.headers['authorization']
 
     if (!token) {
-      throw new UnauthorizedError('Token is missing')
+      throwError(APPLICATION_ERRORS.AUTH.TOKEN_MISSING)
     }
 
     const rawDecodedToken = await verifyToken(token)
-
-    consola.log(rawDecodedToken)
 
     const decodedToken = TokenPayloadSchema.parse(rawDecodedToken)
 
@@ -37,7 +34,7 @@ export async function checkToken(
     })
 
     if (!user || token !== user.token) {
-      throw new UnauthorizedError('User doesnt exist')
+      throwError(APPLICATION_ERRORS.AUTH.DB_TOKEN_NOT_FOUND)
     }
 
     if (!req.body) {
@@ -50,11 +47,11 @@ export async function checkToken(
 
     next()
   } catch (error) {
-    // Check this logic i dont like it
-    consola.error(error)
-    const { statusCode, data } = unauthorized(
-      new UnauthorizedError('User is not authorized'),
-    )
-    res.status(statusCode).json(data)
+    if (error instanceof ApplicationError) {
+      res.status(error.statusCode).json({ data: { message: error.message } })
+    }
+    res.status(APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.statusCode).json({
+      data: { message: APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.message },
+    })
   }
 }

@@ -1,0 +1,35 @@
+import { ObjectId } from 'mongodb'
+import jwt from 'jsonwebtoken'
+
+import { loadEnv } from '../../../src/config/environment-variables'
+
+const { JWT_SECRET } = loadEnv()
+
+export const userSeeds = [
+  {
+    _id: new ObjectId('64ae0db703b87ae1f00f6f01'),
+    username: 'validUser',
+    password: Bun.hash('ValidPass123!!'),
+    token: jwt.sign(
+      { userId: '64ae0db703b87ae1f00f6f01' },
+      JWT_SECRET,
+      { expiresIn: '1h' }, // valid for 1 hour
+    ),
+  },
+  {
+    _id: new ObjectId('64ae0db703b87ae1f00f6f02'),
+    username: 'noTokenUser',
+    password: Bun.hash('NoToken123!'),
+    token: null, // no token assigned
+  },
+  {
+    _id: new ObjectId('64ae0db703b87ae1f00f6f03'),
+    username: 'expiredUser',
+    password: Bun.hash('Expired123!'),
+    token: jwt.sign(
+      { userId: '64ae0db703b87ae1f00f6f03' },
+      JWT_SECRET,
+      { expiresIn: '-1h' }, // already expired
+    ),
+  },
+]

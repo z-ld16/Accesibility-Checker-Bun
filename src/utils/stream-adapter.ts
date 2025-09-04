@@ -1,12 +1,12 @@
 import type { Response, Request } from 'express'
 
 import { Readable } from 'node:stream'
-import z, { ZodError } from 'zod/v4'
+import z from 'zod/v4'
 
 import type { InferFlattened, RequestSchema } from '../types/types'
 
-import { unauthorized, serverError, badRequest } from './http-responses'
-import { UnauthorizedError } from '../errors/services.errors'
+import { APPLICATION_ERRORS } from '../errors/errors'
+import { ApplicationError } from './errors.utils'
 
 export function adaptStreamHandler<T extends RequestSchema, P>(
   controller: (
@@ -31,18 +31,20 @@ export function adaptStreamHandler<T extends RequestSchema, P>(
         stream.destroy()
       })
     } catch (err: unknown) {
-      if (err instanceof UnauthorizedError) {
-        const { statusCode, data } = unauthorized(err)
-        return res.status(statusCode).json(data)
+      if (err instanceof ApplicationError) {
+        return res
+          .status(err.statusCode)
+          .json({ error: { data: { message: err.message } } })
       }
-      if (err instanceof ZodError) {
-        const { statusCode } = badRequest(err)
-        return res.status(statusCode).json({ data: z.formatError(err) })
-      }
-      const { statusCode, data } = serverError(
-        new Error('Server error contact support'),
-      )
-      return res.status(statusCode).json({ error: data })
+      return res
+        .status(APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.statusCode)
+        .json({
+          error: {
+            data: {
+              message: APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.message,
+            },
+          },
+        })
     }
   }
 }

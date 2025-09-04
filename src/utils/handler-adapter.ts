@@ -1,7 +1,6 @@
 import type { Response, Request } from 'express'
 
 import z, { ZodError } from 'zod/v4'
-import consola from 'consola'
 
 import type {
   PaginatedResponseSchema,
@@ -11,8 +10,8 @@ import type {
   HttpResponse,
 } from '../types/types'
 
-import { unauthorized, serverError, badRequest } from './http-responses'
-import { UnauthorizedError } from '../errors/services.errors'
+import { APPLICATION_ERRORS } from '../errors/errors'
+import { ApplicationError } from './errors.utils'
 
 export function adaptHandler<
   T extends RequestSchema,
@@ -69,23 +68,24 @@ export function adaptHandler<
 ) {
   return async (req: Request, res: Response) => {
     try {
-      consola.log(req.body)
       const input = parseInput(req, schema.request)
       const { statusCode, data } = await controller(input)
       return res.status(statusCode).json(data)
     } catch (err: unknown) {
-      if (err instanceof UnauthorizedError) {
-        const { statusCode, data } = unauthorized(err)
-        return res.status(statusCode).json(data)
-      }
       if (err instanceof ZodError) {
-        const { statusCode } = badRequest(err)
-        return res.status(statusCode).json({ data: z.formatError(err) })
+        const { statusCode, message } = APPLICATION_ERRORS.GENERIC.INVALID_INPUT
+        return res.status(statusCode).json({
+          data: {
+            message,
+            stack: z.formatError(err),
+          },
+        })
       }
-      const { statusCode, data } = serverError(
-        new Error('Server error contact support'),
-      )
-      return res.status(statusCode).json({ error: data })
+      if (err instanceof ApplicationError) {
+        return res
+          .status(err.statusCode)
+          .json({ error: { data: { message: err.message } } })
+      }
     }
   }
 }
