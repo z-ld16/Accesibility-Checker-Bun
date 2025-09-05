@@ -2,8 +2,6 @@
 
 A backend service to perform accessibility scans on URLs using **Puppeteer** and **axe-core**, with user authentication and CSV export support.
 
----
-
 ## Features
 
 - Run accessibility scans for multiple URLs.
@@ -13,8 +11,6 @@ A backend service to perform accessibility scans on URLs using **Puppeteer** and
 - Export scan results as a CSV file.
 - Pagination support for fetching scans.
 - Built-in schema validation using **Zod**.
-
----
 
 ## Tech Stack
 
@@ -35,19 +31,15 @@ A backend service to perform accessibility scans on URLs using **Puppeteer** and
 - Docker installed
 - Environment variables configured (see `.env.example`)
 
----
-
 ### Installation
 
 ```bash
 git clone <repo-url>
-cd accessibility-scanner-api
-docker-compose up -d -build
+cd Accesibility-Checker-Bun
+docker-compose up -d --build
 ```
 
----
-
-### Running test suites
+### Running test suite
 
 - A MongoDB Docker container must be running, as it is required for executing the tests.
 
