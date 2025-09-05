@@ -6,10 +6,24 @@ import { throwError } from '../../utils/errors.utils'
 import { getCollection } from '../../utils/db'
 import { COLLECTIONS } from '../../config'
 
+/**
+ * Creates a new user in the database.
+ *
+ * - Checks if a user with the same username already exists and throws an error if so.
+ * - Hashes the user's password before storing it.
+ * - Inserts the new user into the `USERS` collection.
+ * - Returns the newly created user document.
+ *
+ * @async
+ * @function createUserService
+ * @param {InferFlattened<typeof CreateUserSchemas.request>} params - The payload containing `username` and `password`.
+ * @returns {Promise<Users>} The newly created user document.
+ * @throws {Error} If a user with the given username already exists.
+ */
 export async function createUserService({
   username,
   password,
-}: InferFlattened<typeof CreateUserSchemas.request>) {
+}: InferFlattened<typeof CreateUserSchemas.request>): Promise<Users> {
   const users = await getCollection<Users>(COLLECTIONS.USERS)
 
   const usernameExists = await users.findOne({ username })

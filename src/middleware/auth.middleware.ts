@@ -11,11 +11,28 @@ import { APPLICATION_ERRORS } from '../errors/errors'
 import { getCollection } from '../utils/db'
 import { COLLECTIONS } from '../config'
 
+/**
+ * Express middleware to verify and validate a JWT token.
+ *
+ * - Checks if the `Authorization` header contains a token.
+ * - Verifies the token using `verifyToken`.
+ * - Validates the token payload against `TokenPayloadSchema`.
+ * - Checks if the token exists in the database for the corresponding user.
+ * - Attaches the decoded token payload to `req.body.tokenData` for downstream use.
+ * - Calls `next()` if verification succeeds; otherwise, responds with an error.
+ *
+ * @async
+ * @function checkToken
+ * @param {Request} req - Express request object.
+ * @param {Response} res - Express response object.
+ * @param {NextFunction} next - Express next middleware function.
+ * @returns {Promise<void>} Does not return a value; either calls `next()` or sends an error response.
+ */
 export async function checkToken(
   req: Request,
   res: Response,
   next: NextFunction,
-) {
+): Promise<void> {
   try {
     const token = req.headers['authorization']
 
@@ -49,6 +66,7 @@ export async function checkToken(
   } catch (error) {
     if (error instanceof ApplicationError) {
       res.status(error.statusCode).json({ data: { message: error.message } })
+      return
     }
     res.status(APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.statusCode).json({
       data: { message: APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.message },
