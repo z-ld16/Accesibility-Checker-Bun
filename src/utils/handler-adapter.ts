@@ -13,6 +13,7 @@ import type {
 
 import { APPLICATION_ERRORS } from '../errors/errors'
 import { ApplicationError } from './errors.utils'
+import { parseInput } from './parser.utils'
 
 export function adaptHandler<
   T extends RequestSchema,
@@ -88,22 +89,9 @@ export function adaptHandler<
           .status(err.statusCode)
           .json({ data: { message: err.message } })
       }
+      return res
+        .status(APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.statusCode)
+        .json(APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.message)
     }
-  }
-}
-
-const EmptySchema = z.object({})
-
-function parseInput(req: Request, schema: RequestSchema = EmptySchema) {
-  const parsed = schema.strip().parse({
-    body: req?.body,
-    params: req?.params,
-    query: req?.query,
-  })
-
-  return {
-    ...(parsed?.params ?? {}),
-    ...(parsed?.body ?? {}),
-    ...(parsed?.query ?? {}),
   }
 }

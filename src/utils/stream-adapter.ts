@@ -2,11 +2,11 @@ import type { Response, Request } from 'express'
 
 import { Readable } from 'node:stream'
 import consola from 'consola'
-import z from 'zod/v4'
 
 import type { InferFlattened, RequestSchema } from '../types/types'
 
 import { APPLICATION_ERRORS } from '../errors/errors'
+import { parseInput } from './parser.utils'
 
 export function adaptStreamHandler<T extends RequestSchema, P>(
   controller: (
@@ -53,21 +53,5 @@ export function adaptStreamHandler<T extends RequestSchema, P>(
           },
         })
     }
-  }
-}
-
-const EmptySchema = z.object({})
-
-function parseInput(req: Request, schema: RequestSchema = EmptySchema) {
-  const parsed = schema.strip().parse({
-    body: req?.body,
-    params: req?.params,
-    query: req?.query,
-  })
-
-  return {
-    ...(parsed?.params ?? {}),
-    ...(parsed?.body ?? {}),
-    ...(parsed?.query ?? {}),
   }
 }
