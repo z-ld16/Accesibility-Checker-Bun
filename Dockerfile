@@ -1,4 +1,4 @@
-FROM oven/bun:1 AS base
+FROM oven/bun:1
 WORKDIR /usr/src/app
 
 RUN apt-get update && apt-get install -y \
@@ -12,10 +12,8 @@ RUN apt-get update && apt-get install -y \
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
-WORKDIR /usr/src/app
-
-COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile
+COPY package.json ./
+RUN bun install 
 
 COPY src ./src
 
