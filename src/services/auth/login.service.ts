@@ -1,5 +1,3 @@
-import consola from 'consola'
-
 import type { LoginUserSchemas } from '../../schemas/users/login-user.schema'
 import type { InferFlattened, Users } from '../../types/types'
 
@@ -21,7 +19,7 @@ export async function loginUserService({
     throwError(APPLICATION_ERRORS.USERS.WRONG_PASSWORD)
   }
 
-  const validPassword = Bun.password.verify(password, user.password)
+  const validPassword = Bun.password.verifySync(password, user.password)
 
   if (!validPassword) {
     throwError(APPLICATION_ERRORS.USERS.WRONG_PASSWORD)

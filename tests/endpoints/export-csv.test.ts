@@ -1,6 +1,16 @@
 import type { Db } from 'mongodb'
 
-import { beforeAll, afterAll, describe, expect, it } from 'bun:test'
+import {
+  beforeAll,
+  afterEach,
+  afterAll,
+  describe,
+  expect,
+  spyOn,
+  mock,
+  it,
+} from 'bun:test'
+import * as csv from 'csv'
 
 import { APPLICATION_ERRORS } from '../../src/errors/errors'
 import { createTestApp } from '../utils/create-test-app'
@@ -10,7 +20,7 @@ import scanRoutes from '../../src/routes/scan.routes'
 import { mockDB } from '../utils/mockDb'
 import { seedDb } from '../utils/seedDb'
 
-describe('GET:/scan/list', () => {
+describe('GET:/scan/list/download', () => {
   let port: number
   let db: Db
   let dispose: () => Promise<void>
@@ -25,6 +35,10 @@ describe('GET:/scan/list', () => {
 
   afterAll(async () => {
     await dispose()
+  })
+
+  afterEach(async () => {
+    mock.clearAllMocks()
   })
 
   const endpoint = '/scan/list/download'
@@ -58,5 +72,27 @@ describe('GET:/scan/list', () => {
  `.trim(),
     )
     expect(result.status).toBe(200)
+  })
+
+  it('should return server error', async () => {
+    const validUser = await getValidUser(db)
+    spyOn(csv, 'stringify').mockImplementationOnce(() => {
+      throw new Error('Mocked stringify error')
+    })
+    const result = await fetch(
+      buildBasePath(port) + endpoint + '?limit=8&offset=0',
+      {
+        headers: {
+          Authorization: `${validUser.token}`,
+        },
+      },
+    )
+
+    expect(result.status).toBe(500)
+    expect(await result.json()).toEqual({
+      data: {
+        message: APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.message,
+      },
+    })
   })
 })

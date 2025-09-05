@@ -1,12 +1,12 @@
 import type { Response, Request } from 'express'
 
 import { Readable } from 'node:stream'
+import consola from 'consola'
 import z from 'zod/v4'
 
 import type { InferFlattened, RequestSchema } from '../types/types'
 
 import { APPLICATION_ERRORS } from '../errors/errors'
-import { ApplicationError } from './errors.utils'
 
 export function adaptStreamHandler<T extends RequestSchema, P>(
   controller: (
@@ -23,7 +23,20 @@ export function adaptStreamHandler<T extends RequestSchema, P>(
 
       res.setHeader('Content-Type', 'text/csv')
       res.setHeader('Content-Disposition', 'attachment; filename=data.csv')
-      res.status(200)
+
+      stream.on('error', err => {
+        if (!res.headersSent) {
+          res
+            .status(APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.statusCode)
+            .json({
+              data: {
+                message: APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.message,
+              },
+            })
+        } else {
+          res.destroy(err)
+        }
+      })
 
       stream.pipe(res)
 
@@ -31,18 +44,12 @@ export function adaptStreamHandler<T extends RequestSchema, P>(
         stream.destroy()
       })
     } catch (err: unknown) {
-      if (err instanceof ApplicationError) {
-        return res
-          .status(err.statusCode)
-          .json({ error: { data: { message: err.message } } })
-      }
+      consola.log(err)
       return res
         .status(APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.statusCode)
         .json({
-          error: {
-            data: {
-              message: APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.message,
-            },
+          data: {
+            message: APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.message,
           },
         })
     }

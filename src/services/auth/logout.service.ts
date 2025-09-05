@@ -13,12 +13,8 @@ export async function logoutUserService({
 
   const user = await users.findOne({ _id: new ObjectId(tokenData.userId) })
 
-  if (!user) {
-    return
-  }
-
-  users.updateOne(
-    { _id: user._id },
+  await users.updateOne(
+    { _id: user!._id },
     {
       $set: {
         token: '',

@@ -14,6 +14,11 @@ export const APPLICATION_ERRORS = {
       debugMessage: 'Unhandled error',
       statusCode: 500,
     },
+    DB_ERROR: {
+      message: 'Server Error',
+      debugMessage: 'Cannot connect to db',
+      statusCode: 500,
+    },
   },
   SCANS: {
     GENERIC_ERROR: {

@@ -11,7 +11,7 @@ export const logoutUserController = async (
   return ok(
     LogoutUserSchemas.response.strip().parse({
       data: {
-        message: 'Logged out succesfully',
+        message: 'Logged out successfully',
       },
     }),
   )
