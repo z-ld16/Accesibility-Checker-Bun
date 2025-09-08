@@ -2,10 +2,14 @@ import type { Db } from 'mongodb'
 
 import { beforeAll, afterAll, describe, expect, it } from 'bun:test'
 
+import {
+  getExpiredUser,
+  getNoTokenUser,
+  getValidUser,
+} from '../utils/get-valid-user'
 import { APPLICATION_ERRORS } from '../../src/errors/errors'
 import { createTestApp } from '../utils/create-test-app'
 import { buildBasePath } from '../utils/build-base-path'
-import { getValidUser } from '../utils/get-valid-user'
 import scanRoutes from '../../src/routes/scan.routes'
 import { scanSeeds } from '../utils/seeds/scan-seed'
 import { COLLECTIONS } from '../../src/config'
@@ -42,6 +46,44 @@ describe('DELETE:/scan/:id', () => {
         message: APPLICATION_ERRORS.AUTH.TOKEN_MISSING.message,
       },
     })
+  })
+
+  it('should return unauthorized cause the token is expired', async () => {
+    const expiredUser = await getExpiredUser(db)
+    const result = await fetch(
+      buildBasePath(port) + endpoint + scanSeeds[0]?._id,
+      {
+        method: 'delete',
+        headers: {
+          Authorization: `${expiredUser.token}`,
+        },
+      },
+    )
+    expect(await result.json()).toEqual({
+      data: {
+        message: APPLICATION_ERRORS.AUTH.TOKEN_MISSING.message,
+      },
+    })
+    expect(result.status).toBe(APPLICATION_ERRORS.AUTH.TOKEN_MISSING.statusCode)
+  })
+
+  it('should return unauthorized cause the token doesnt exist in db', async () => {
+    const noTokenUser = await getNoTokenUser(db)
+    const result = await fetch(
+      buildBasePath(port) + endpoint + scanSeeds[0]?._id,
+      {
+        method: 'delete',
+        headers: {
+          Authorization: `${noTokenUser.token}`,
+        },
+      },
+    )
+    expect(await result.json()).toEqual({
+      data: {
+        message: APPLICATION_ERRORS.AUTH.TOKEN_MISSING.message,
+      },
+    })
+    expect(result.status).toBe(APPLICATION_ERRORS.AUTH.TOKEN_MISSING.statusCode)
   })
 
   it('should delete scan', async () => {

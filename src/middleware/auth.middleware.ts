@@ -1,5 +1,6 @@
 import type { NextFunction, Response, Request } from 'express'
 
+import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken'
 import { ObjectId } from 'mongodb'
 
 import type { Users } from '../types/types'
@@ -66,6 +67,15 @@ export async function checkToken(
   } catch (error) {
     if (error instanceof ApplicationError) {
       res.status(error.statusCode).json({ data: { message: error.message } })
+      return
+    }
+    if (
+      error instanceof TokenExpiredError ||
+      error instanceof JsonWebTokenError
+    ) {
+      res.status(APPLICATION_ERRORS.AUTH.TOKEN_EXPIRED.statusCode).json({
+        data: { message: APPLICATION_ERRORS.AUTH.TOKEN_EXPIRED.message },
+      })
       return
     }
     res.status(APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.statusCode).json({

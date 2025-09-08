@@ -54,6 +54,11 @@ export const APPLICATION_ERRORS = {
       debugMessage: 'Token is missing',
       statusCode: 401,
     },
+    TOKEN_EXPIRED: {
+      message: 'Missing authorization',
+      debugMessage: 'Token is expired',
+      statusCode: 401,
+    },
     WRONG_PASSWORD: {
       message: 'Username or password are not correct, please try again',
       statusCode: 400,

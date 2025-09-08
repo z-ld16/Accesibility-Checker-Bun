@@ -21,5 +21,5 @@ export const createUserController = async (
   input: InferFlattened<typeof CreateUserSchemas.request>,
 ): Promise<ReturnType<typeof ok>> => {
   const user = await createUserService(input)
-  return ok(parseOutput(user, CreateUserSchemas.response))
+  return ok(parseOutput({ data: user }, CreateUserSchemas.response))
 }

@@ -12,3 +12,25 @@ export async function getValidUser(db: Db) {
   }
   return validUser
 }
+
+export async function getExpiredUser(db: Db) {
+  const expiredUser = await db
+    .collection(COLLECTIONS.USERS)
+    .findOne({ username: 'expiredUser' })
+
+  if (!expiredUser) {
+    throw new Error('User not found')
+  }
+  return expiredUser
+}
+
+export async function getNoTokenUser(db: Db) {
+  const noTokenUser = await db
+    .collection(COLLECTIONS.USERS)
+    .findOne({ username: 'noTokenUser' })
+
+  if (!noTokenUser) {
+    throw new Error('User not found')
+  }
+  return noTokenUser
+}

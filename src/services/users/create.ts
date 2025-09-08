@@ -35,7 +35,15 @@ export async function createUserService({
   const { insertedId } = await users.insertOne({
     username,
     password: Bun.password.hashSync(password, 'bcrypt'),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   })
 
-  return await users.findOne({ _id: insertedId })
+  const newUser = await users.findOne({ _id: insertedId })
+
+  if (!newUser) {
+    throwError(APPLICATION_ERRORS.GENERIC.DB_ERROR)
+  }
+
+  return newUser
 }
