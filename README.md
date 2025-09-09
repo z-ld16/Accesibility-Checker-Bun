@@ -81,6 +81,7 @@ Tests are made following some guidelines seen in: <https://github.com/goldbergyo
 
 ## Tests Coverage
 
+```
 -------------------------------------------|---------|---------|-------------------
 File                                       | % Funcs | % Lines | Uncovered Line #s
 -------------------------------------------|---------|---------|-------------------
@@ -125,7 +126,7 @@ All files                                  |   99.15 |   99.62 |
  src/utils/parser.utils.ts                 |  100.00 |  100.00 |
  src/utils/stream-adapter.ts               |  100.00 |  100.00 |
 -------------------------------------------|---------|---------|-------------------
-
+```
 ---
 
 
