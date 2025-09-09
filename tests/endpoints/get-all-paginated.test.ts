@@ -34,7 +34,7 @@ describe('GET:/scan/list', () => {
     const result = await fetch(buildBasePath(port) + endpoint)
     expect(result.status).toBe(APPLICATION_ERRORS.AUTH.TOKEN_MISSING.statusCode)
     expect(await result.json()).toEqual({
-      data: {
+      error: {
         message: APPLICATION_ERRORS.AUTH.TOKEN_MISSING.message,
       },
     })
@@ -52,7 +52,7 @@ describe('GET:/scan/list', () => {
       APPLICATION_ERRORS.GENERIC.INVALID_INPUT.statusCode,
     )
     expect(await result.json()).toEqual({
-      data: {
+      error: {
         message: APPLICATION_ERRORS.GENERIC.INVALID_INPUT.message,
         stack: {
           _errors: [],

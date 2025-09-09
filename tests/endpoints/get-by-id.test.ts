@@ -1,9 +1,19 @@
-import type { Db } from 'mongodb'
-
-import { beforeAll, afterAll, describe, expect, mock, it } from 'bun:test'
+import {
+  beforeAll,
+  afterAll,
+  describe,
+  expect,
+  spyOn,
+  mock,
+  it,
+} from 'bun:test'
+import { ObjectId, type Db } from 'mongodb'
 import { afterEach } from 'node:test'
 
+import type { Scans } from '../../src/types/types'
+
 import { APPLICATION_ERRORS } from '../../src/errors/errors'
+import * as getById from '../../src/services/scan/get-by-id'
 import { createTestApp } from '../utils/create-test-app'
 import { buildBasePath } from '../utils/build-base-path'
 import { getValidUser } from '../utils/get-valid-user'
@@ -42,7 +52,7 @@ describe('GET:/scan/:id', () => {
     )
     expect(result.status).toBe(APPLICATION_ERRORS.AUTH.TOKEN_MISSING.statusCode)
     expect(await result.json()).toEqual({
-      data: {
+      error: {
         message: APPLICATION_ERRORS.AUTH.TOKEN_MISSING.message,
       },
     })
@@ -59,7 +69,6 @@ describe('GET:/scan/:id', () => {
         },
       },
     )
-    expect(result.status).toBe(200)
     expect(await result.json()).toEqual({
       data: {
         _id: '68ae0db703b87ae1f00f6f0a',
@@ -76,11 +85,47 @@ describe('GET:/scan/:id', () => {
         ],
       },
     })
+    expect(result.status).toBe(200)
+  })
+
+  it('should return unhandled error', async () => {
+    const validUser = await getValidUser(db)
+    const spy = spyOn(getById, 'getScanByIdService').mockResolvedValueOnce({
+      _id: new ObjectId('68ae0db703b87ae1f00f6f0a'),
+      createdAt: '2025-08-26T19:40:39.794Z',
+      updatedAt: '2025-08-26T19:40:39.794Z',
+      violations: [
+        {
+          description:
+            'Ensure links are distinguished from surrounding text in a way that does not rely on color',
+          id: 'link-in-text-block',
+          impact: 'serious',
+        },
+      ],
+    } as Scans)
+    const result = await fetch(
+      buildBasePath(port) + endpoint + scanSeeds[0]?._id,
+      {
+        method: 'get',
+        headers: {
+          Authorization: `${validUser.token}`,
+        },
+      },
+    )
+    expect(await result.json()).toEqual({
+      error: {
+        message: APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.message,
+      },
+    })
+    expect(result.status).toBe(
+      APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.statusCode,
+    )
+    spy.mockClear()
   })
 
   it('should return not found', async () => {
     const validUser = await getValidUser(db)
-    db.collection(COLLECTIONS.SCANS).deleteOne({ _id: scanSeeds[0]?._id })
+    await db.collection(COLLECTIONS.SCANS).deleteOne({ _id: scanSeeds[0]?._id })
     const result = await fetch(
       buildBasePath(port) + endpoint + scanSeeds[0]?._id,
       {
@@ -93,7 +138,7 @@ describe('GET:/scan/:id', () => {
       APPLICATION_ERRORS.SCANS.NOT_FOUND_ERROR.statusCode,
     )
     expect(await result.json()).toEqual({
-      data: {
+      error: {
         message: APPLICATION_ERRORS.SCANS.NOT_FOUND_ERROR.message,
       },
     })

@@ -1,12 +1,9 @@
 import type { Db } from 'mongodb'
 
-import { beforeAll, afterAll, describe, expect, it } from 'bun:test'
+import { beforeAll, afterAll, describe, expect, spyOn, it } from 'bun:test'
+import { MongoClient } from 'mongodb'
 
-import {
-  getExpiredUser,
-  getNoTokenUser,
-  getValidUser,
-} from '../utils/get-valid-user'
+import { getExpiredUser, getValidUser } from '../utils/get-valid-user'
 import { APPLICATION_ERRORS } from '../../src/errors/errors'
 import { createTestApp } from '../utils/create-test-app'
 import { buildBasePath } from '../utils/build-base-path'
@@ -42,7 +39,7 @@ describe('DELETE:/scan/:id', () => {
     )
     expect(result.status).toBe(APPLICATION_ERRORS.AUTH.TOKEN_MISSING.statusCode)
     expect(await result.json()).toEqual({
-      data: {
+      error: {
         message: APPLICATION_ERRORS.AUTH.TOKEN_MISSING.message,
       },
     })
@@ -60,26 +57,7 @@ describe('DELETE:/scan/:id', () => {
       },
     )
     expect(await result.json()).toEqual({
-      data: {
-        message: APPLICATION_ERRORS.AUTH.TOKEN_MISSING.message,
-      },
-    })
-    expect(result.status).toBe(APPLICATION_ERRORS.AUTH.TOKEN_MISSING.statusCode)
-  })
-
-  it('should return unauthorized cause the token doesnt exist in db', async () => {
-    const noTokenUser = await getNoTokenUser(db)
-    const result = await fetch(
-      buildBasePath(port) + endpoint + scanSeeds[0]?._id,
-      {
-        method: 'delete',
-        headers: {
-          Authorization: `${noTokenUser.token}`,
-        },
-      },
-    )
-    expect(await result.json()).toEqual({
-      data: {
+      error: {
         message: APPLICATION_ERRORS.AUTH.TOKEN_MISSING.message,
       },
     })
@@ -108,5 +86,58 @@ describe('DELETE:/scan/:id', () => {
       .collection(COLLECTIONS.SCANS)
       .findOne({ _id: scanSeeds[0]?._id })
     expect(deletedScan).toBe(null)
+  })
+
+  it('should return unhandled error', async () => {
+    const validUser = await getValidUser(db)
+    spyOn(MongoClient.prototype, 'connect').mockRejectedValueOnce(
+      new Error('Unhandled Error'),
+    )
+    const result = await fetch(
+      buildBasePath(port) + endpoint + scanSeeds[0]?._id,
+      {
+        method: 'delete',
+        headers: {
+          Authorization: `${validUser.token}`,
+        },
+      },
+    )
+    expect(await result.json()).toEqual({
+      error: {
+        message: APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.message,
+      },
+    })
+    expect(result.status).toBe(
+      APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.statusCode,
+    )
+  })
+
+  it('should return unauthorized cause the token doesnt exist in db', async () => {
+    const validUser = await getValidUser(db)
+    await db.collection(COLLECTIONS.USERS).updateOne(
+      { _id: validUser._id },
+      {
+        $set: {
+          token: null,
+        },
+      },
+    )
+    const result = await fetch(
+      buildBasePath(port) + endpoint + scanSeeds[0]?._id,
+      {
+        method: 'delete',
+        headers: {
+          Authorization: `${validUser.token}`,
+        },
+      },
+    )
+    expect(await result.json()).toEqual({
+      error: {
+        message: APPLICATION_ERRORS.AUTH.DB_TOKEN_NOT_FOUND.message,
+      },
+    })
+    expect(result.status).toBe(
+      APPLICATION_ERRORS.AUTH.DB_TOKEN_NOT_FOUND.statusCode,
+    )
   })
 })

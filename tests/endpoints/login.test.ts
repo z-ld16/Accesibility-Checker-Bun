@@ -37,7 +37,7 @@ describe.only('POST:/auth/login', () => {
       body: JSON.stringify({}),
     })
     expect(await result.json()).toEqual({
-      data: {
+      error: {
         message: 'Input is invalid',
         stack: {
           _errors: [],
@@ -68,7 +68,7 @@ describe.only('POST:/auth/login', () => {
       }),
     })
     expect(await result.json()).toEqual({
-      data: {
+      error: {
         message: APPLICATION_ERRORS.AUTH.WRONG_PASSWORD.message,
       },
     })
@@ -87,7 +87,7 @@ describe.only('POST:/auth/login', () => {
       }),
     })
     expect(await result.json()).toEqual({
-      data: {
+      error: {
         message: APPLICATION_ERRORS.AUTH.WRONG_PASSWORD.message,
       },
     })

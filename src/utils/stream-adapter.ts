@@ -48,7 +48,7 @@ export function adaptStreamHandler<T extends RequestSchema, P>(
       return res
         .status(APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.statusCode)
         .json({
-          data: {
+          error: {
             message: APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.message,
           },
         })

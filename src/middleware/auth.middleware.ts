@@ -66,7 +66,7 @@ export async function checkToken(
     next()
   } catch (error) {
     if (error instanceof ApplicationError) {
-      res.status(error.statusCode).json({ data: { message: error.message } })
+      res.status(error.statusCode).json({ error: { message: error.message } })
       return
     }
     if (
@@ -74,12 +74,12 @@ export async function checkToken(
       error instanceof JsonWebTokenError
     ) {
       res.status(APPLICATION_ERRORS.AUTH.TOKEN_EXPIRED.statusCode).json({
-        data: { message: APPLICATION_ERRORS.AUTH.TOKEN_EXPIRED.message },
+        error: { message: APPLICATION_ERRORS.AUTH.TOKEN_EXPIRED.message },
       })
       return
     }
     res.status(APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.statusCode).json({
-      data: { message: APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.message },
+      error: { message: APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.message },
     })
   }
 }

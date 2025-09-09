@@ -78,7 +78,7 @@ export function adaptHandler<
       if (err instanceof ZodError) {
         const { statusCode, message } = APPLICATION_ERRORS.GENERIC.INVALID_INPUT
         return res.status(statusCode).json({
-          data: {
+          error: {
             message,
             stack: z.formatError(err),
           },
@@ -87,11 +87,15 @@ export function adaptHandler<
       if (err instanceof ApplicationError) {
         return res
           .status(err.statusCode)
-          .json({ data: { message: err.message } })
+          .json({ error: { message: err.message } })
       }
       return res
         .status(APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.statusCode)
-        .json(APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.message)
+        .json({
+          error: {
+            message: APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.message,
+          },
+        })
     }
   }
 }

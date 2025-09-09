@@ -78,7 +78,7 @@ describe('POST:/scan', () => {
     })
     expect(result.status).toBe(APPLICATION_ERRORS.AUTH.TOKEN_MISSING.statusCode)
     expect(await result.json()).toEqual({
-      data: {
+      error: {
         message: APPLICATION_ERRORS.AUTH.TOKEN_MISSING.message,
       },
     })
@@ -98,7 +98,7 @@ describe('POST:/scan', () => {
       }),
     })
     expect(await result.json()).toEqual({
-      data: {
+      error: {
         message: 'Input is invalid',
         stack: {
           _errors: [],

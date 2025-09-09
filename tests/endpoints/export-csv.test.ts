@@ -47,7 +47,7 @@ describe('GET:/scan/list/download', () => {
     const result = await fetch(buildBasePath(port) + endpoint)
     expect(result.status).toBe(APPLICATION_ERRORS.AUTH.TOKEN_MISSING.statusCode)
     expect(await result.json()).toEqual({
-      data: {
+      error: {
         message: APPLICATION_ERRORS.AUTH.TOKEN_MISSING.message,
       },
     })
@@ -90,7 +90,7 @@ describe('GET:/scan/list/download', () => {
 
     expect(result.status).toBe(500)
     expect(await result.json()).toEqual({
-      data: {
+      error: {
         message: APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.message,
       },
     })

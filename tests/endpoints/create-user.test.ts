@@ -35,7 +35,7 @@ describe.only('POST:/users', () => {
       body: JSON.stringify({}),
     })
     expect(await result.json()).toEqual({
-      data: {
+      error: {
         message: 'Input is invalid',
         stack: {
           _errors: [],
@@ -67,7 +67,7 @@ describe.only('POST:/users', () => {
       }),
     })
     expect(await result.json()).toEqual({
-      data: {
+      error: {
         message: APPLICATION_ERRORS.USERS.USERNAME_FOUND.message,
       },
     })
@@ -87,7 +87,7 @@ describe.only('POST:/users', () => {
       }),
     })
     expect(await result.json()).toEqual({
-      data: {
+      error: {
         message: APPLICATION_ERRORS.USERS.USERNAME_FOUND.message,
       },
     })

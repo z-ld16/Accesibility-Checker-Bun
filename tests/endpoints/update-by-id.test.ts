@@ -77,7 +77,7 @@ describe('PUT:/scan/:id', () => {
     )
     expect(result.status).toBe(APPLICATION_ERRORS.AUTH.TOKEN_MISSING.statusCode)
     expect(await result.json()).toEqual({
-      data: {
+      error: {
         message: APPLICATION_ERRORS.AUTH.TOKEN_MISSING.message,
       },
     })
@@ -130,8 +130,38 @@ describe('PUT:/scan/:id', () => {
       APPLICATION_ERRORS.SCANS.NOT_FOUND_ERROR.statusCode,
     )
     expect(await result.json()).toEqual({
-      data: {
+      error: {
         message: APPLICATION_ERRORS.SCANS.NOT_FOUND_ERROR.message,
+      },
+    })
+  })
+
+  it('should return 500 on an unhandled error', async () => {
+    spyOn(puppeteer, 'launch').mockResolvedValue({
+      newPage: jest.fn().mockResolvedValue({
+        goto: jest.fn().mockResolvedValue(undefined),
+        addScriptTag: jest.fn().mockResolvedValue(undefined),
+        evaluate: jest.fn().mockRejectedValueOnce(new Error('Unhandled error')),
+      }),
+      close: jest.fn().mockResolvedValue(undefined),
+    } as never)
+    const validUser = await getValidUser(db)
+    db.collection(COLLECTIONS.SCANS).deleteOne({ _id: scanSeeds[0]?._id })
+    const result = await fetch(
+      buildBasePath(port) + endpoint + scanSeeds[1]?._id,
+      {
+        headers: {
+          Authorization: `${validUser.token}`,
+        },
+        method: 'put',
+      },
+    )
+    expect(result.status).toBe(
+      APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.statusCode,
+    )
+    expect(await result.json()).toEqual({
+      error: {
+        message: APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.message,
       },
     })
   })

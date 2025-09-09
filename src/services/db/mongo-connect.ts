@@ -13,5 +13,6 @@ export async function mongoConnect() {
     return client.db(DB_NAME)
   } catch (err) {
     consola.error('MongoDB connection error:', err)
+    throw err
   }
 }

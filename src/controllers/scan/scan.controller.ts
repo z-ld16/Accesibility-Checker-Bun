@@ -60,11 +60,7 @@ export const getScanByIdController = async (
   input: InferFlattened<typeof GetScanByIdSchemas.request>,
 ): Promise<ReturnType<typeof ok>> => {
   const scan = await getScanByIdService(input.id)
-  return ok(
-    GetScanByIdSchemas.response.strip().parse({
-      data: scan,
-    }),
-  )
+  return ok(parseOutput({ data: scan }, GetScanByIdSchemas.response))
 }
 
 /**

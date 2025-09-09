@@ -34,7 +34,7 @@ describe.only('POST:/auth/logout', () => {
       method: 'post',
     })
     expect(await result.json()).toEqual({
-      data: { message: APPLICATION_ERRORS.AUTH.TOKEN_MISSING.message },
+      error: { message: APPLICATION_ERRORS.AUTH.TOKEN_MISSING.message },
     })
     expect(result.status).toEqual(
       APPLICATION_ERRORS.AUTH.TOKEN_MISSING.statusCode,
