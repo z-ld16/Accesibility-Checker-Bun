@@ -2,10 +2,10 @@ import type { Db } from 'mongodb'
 
 import { beforeAll, afterAll, describe, expect, it } from 'bun:test'
 
+import { getDeletedUser, getValidUser } from '../utils/get-valid-user'
 import { APPLICATION_ERRORS } from '../../src/errors/errors'
 import { createTestApp } from '../utils/create-test-app'
 import { buildBasePath } from '../utils/build-base-path'
-import { getValidUser } from '../utils/get-valid-user'
 import authRoutes from '../../src/routes/auth.routes'
 import { mockDB } from '../utils/mockDb'
 import { seedDb } from '../utils/seedDb'
@@ -39,6 +39,20 @@ describe.only('POST:/auth/logout', () => {
     expect(result.status).toEqual(
       APPLICATION_ERRORS.AUTH.TOKEN_MISSING.statusCode,
     )
+  })
+
+  it('should fail user not found', async () => {
+    const deletedUser = await getDeletedUser(db)
+    const result = await fetch(buildBasePath(port) + endpoint, {
+      method: 'post',
+      headers: {
+        Authorization: `${deletedUser.token}`,
+      },
+    })
+    expect(await result.json()).toEqual({
+      error: { message: APPLICATION_ERRORS.USERS.NOT_FOUND.message },
+    })
+    expect(result.status).toEqual(APPLICATION_ERRORS.USERS.NOT_FOUND.statusCode)
   })
 
   it('should finish successfully', async () => {

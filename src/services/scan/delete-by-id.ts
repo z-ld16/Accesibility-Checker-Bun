@@ -1,7 +1,6 @@
 import type { ObjectId } from 'mongodb'
 
-import { getCollection } from '../../utils/db'
-import { COLLECTIONS } from '../../config'
+import { ScanRepository } from '../../repositories/scan.respository'
 
 /**
  * Deletes a scan document by its ID.
@@ -17,7 +16,5 @@ import { COLLECTIONS } from '../../config'
 export async function deleteScanByIdService(
   id: ObjectId,
 ): Promise<import('mongodb').DeleteResult> {
-  const scans = await getCollection(COLLECTIONS.SCANS)
-
-  return scans.deleteOne({ _id: id })
+  return ScanRepository.deleteById(id)
 }

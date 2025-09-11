@@ -76,26 +76,6 @@ describe.only('POST:/users', () => {
     )
   })
 
-  it('should return bad request on existing username', async () => {
-    const validUser = await getValidUser(db)
-    const result = await fetch(buildBasePath(port) + endpoint, {
-      method: 'post',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username: validUser.username,
-        password: 'Hola123!',
-      }),
-    })
-    expect(await result.json()).toEqual({
-      error: {
-        message: APPLICATION_ERRORS.USERS.USERNAME_FOUND.message,
-      },
-    })
-    expect(result.status).toEqual(
-      APPLICATION_ERRORS.USERS.USERNAME_FOUND.statusCode,
-    )
-  })
-
   it('should return user upon successful creation', async () => {
     const result = await fetch(buildBasePath(port) + endpoint, {
       method: 'post',

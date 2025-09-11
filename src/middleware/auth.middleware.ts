@@ -6,6 +6,7 @@ import { ObjectId } from 'mongodb'
 import type { Users } from '../types/types'
 
 import { ApplicationError, throwError } from '../utils/errors.utils'
+import { UsersRepository } from '../repositories/users.repository'
 import { TokenPayloadSchema } from '../schemas/auth/auth.schemas'
 import { verifyToken } from '../services/auth/auth.service'
 import { APPLICATION_ERRORS } from '../errors/errors'
@@ -45,9 +46,7 @@ export async function checkToken(
 
     const decodedToken = TokenPayloadSchema.parse(rawDecodedToken)
 
-    const users = await getCollection<Users>(COLLECTIONS.USERS)
-
-    const user = await users.findOne({
+    const user = await UsersRepository.findOne({
       _id: new ObjectId(decodedToken.userId),
     })
 

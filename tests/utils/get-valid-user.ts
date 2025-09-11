@@ -34,3 +34,14 @@ export async function getNoTokenUser(db: Db) {
   }
   return noTokenUser
 }
+
+export async function getDeletedUser(db: Db) {
+  const deletedUser = await db
+    .collection(COLLECTIONS.USERS)
+    .findOne({ username: 'deletedUser' })
+
+  if (!deletedUser) {
+    throw new Error('User not found')
+  }
+  return deletedUser
+}

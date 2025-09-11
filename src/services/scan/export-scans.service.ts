@@ -5,8 +5,7 @@ import { stringify } from 'csv'
 
 import type { Scans } from '../../types/types'
 
-import { getCollection } from '../../utils/db'
-import { COLLECTIONS } from '../../config'
+import { ScanRepository } from '../../repositories/scan.respository'
 
 /**
  * Exports all scan documents as a CSV stream.
@@ -21,10 +20,7 @@ import { COLLECTIONS } from '../../config'
  */
 export const exportScansCSVService =
   async (): Promise<NodeJS.ReadableStream> => {
-    const scansCollection = await getCollection<Scans>(COLLECTIONS.SCANS)
-
-    const cursor = scansCollection.find()
-
+    const cursor = await ScanRepository.getCursor()
     const stringifier = stringify({
       header: true,
       columns: [

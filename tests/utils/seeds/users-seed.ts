@@ -32,4 +32,13 @@ export const userSeeds = [
       { expiresIn: '-1h' }, // already expired
     ),
   },
+  {
+    _id: new ObjectId('64ae0db703b87ae1f00f6f04'),
+    username: 'deletedUser',
+    password: Bun.password.hashSync('Expired123!'),
+    token: jwt.sign({ userId: '64ae0db703b87ae1f00f6f04' }, JWT_SECRET, {
+      expiresIn: '1h',
+    }),
+    deletedAt: new Date().toISOString(),
+  },
 ]

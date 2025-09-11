@@ -1,8 +1,7 @@
 import puppeteer from 'puppeteer'
 import axe from 'axe-core'
 
-import { getCollection } from '../../utils/db'
-import { COLLECTIONS } from '../../config'
+import { ScanRepository } from '../../repositories/scan.respository'
 
 /**
  * Runs an accessibility scan on a list of URLs using Puppeteer and axe-core.
@@ -29,7 +28,6 @@ export async function runAccessibilityScan(
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   })
   const page = await browser.newPage()
-  const scans = await getCollection(COLLECTIONS.SCANS)
 
   for (const url of urls) {
     await page.goto(url, { waitUntil: 'networkidle2' })
@@ -39,20 +37,7 @@ export async function runAccessibilityScan(
     const results = await page.evaluate(async () => {
       return await axe.run()
     })
-    scans.updateOne(
-      { url },
-      {
-        $set: {
-          violations: results.violations,
-          updatedAt: new Date().toISOString(),
-        },
-        $setOnInsert: {
-          url,
-          createdAt: new Date().toISOString(),
-        },
-      },
-      { upsert: true },
-    )
+    await ScanRepository.upsertOne({ url, violations: results.violations })
   }
 
   await browser.close()

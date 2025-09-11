@@ -47,7 +47,7 @@ export type Scans = {
 
 type Violations = {
   id: string
-  impact: string
+  impact?: string | null
   description: string
 }
 

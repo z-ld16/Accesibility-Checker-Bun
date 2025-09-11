@@ -1,11 +1,10 @@
 import type { LoginUserSchemas } from '../../schemas/users/login-user.schema'
-import type { InferFlattened, Users } from '../../types/types'
+import type { InferFlattened } from '../../types/types'
 
+import { UsersRepository } from '../../repositories/users.repository'
 import { APPLICATION_ERRORS } from '../../errors/errors'
 import { throwError } from '../../utils/errors.utils'
 import { generateToken } from '../auth/auth.service'
-import { getCollection } from '../../utils/db'
-import { COLLECTIONS } from '../../config'
 
 /**
  * Authenticates a user and generates a JWT token.
@@ -25,9 +24,7 @@ export async function loginUserService({
   username,
   password,
 }: InferFlattened<typeof LoginUserSchemas.request>): Promise<string> {
-  const users = await getCollection<Users>(COLLECTIONS.USERS)
-
-  const user = await users.findOne({ username })
+  const user = await UsersRepository.findOne({ username })
 
   if (!user) {
     throwError(APPLICATION_ERRORS.USERS.WRONG_PASSWORD)
@@ -41,14 +38,7 @@ export async function loginUserService({
 
   const token = await generateToken(user._id.toHexString())
 
-  await users.updateOne(
-    { _id: user._id },
-    {
-      $set: {
-        token,
-      },
-    },
-  )
+  await UsersRepository.setToken(user._id, token)
 
   return token
 }

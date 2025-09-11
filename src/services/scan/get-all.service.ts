@@ -1,5 +1,4 @@
-import { getCollection } from '../../utils/db'
-import { COLLECTIONS } from '../../config'
+import { ScanRepository } from '../../repositories/scan.respository'
 
 /**
  * Retrieves a paginated list of scans from the database.
@@ -13,12 +12,9 @@ import { COLLECTIONS } from '../../config'
  * @param {number} offset - The number of scans to skip (for pagination).
  * @returns {Promise<{ scans: object[], count: number }>} An object containing the paginated scans and the total count.
  */
-export const getAllScansServices = async (limit: number, offset: number) => {
-  const scans = await getCollection(COLLECTIONS.SCANS)
-  const count = (await scans.countDocuments()) || 0
-  const rawScans = await scans.find().skip(offset).limit(limit).toArray()
-  return {
-    scans: rawScans,
-    count,
-  }
+export const getAllScansServices = async (
+  limit: number,
+  offset: number,
+): Promise<{ scans: object[]; count: number }> => {
+  return ScanRepository.getAllScansAndCount(limit, offset)
 }
