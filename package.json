@@ -23,8 +23,6 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "@asteasolutions/zod-to-openapi": "^8.1.0",
-    "@testcontainers/mongodb": "^11.5.1",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
     "axe-core": "^4.10.3",
