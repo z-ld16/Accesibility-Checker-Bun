@@ -34,8 +34,9 @@ A backend service to perform accessibility scans on URLs using **Puppeteer** and
 ### Installation
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/holubba/Accesibility-Checker-Bun
 cd Accesibility-Checker-Bun
+cp env.example ./.env
 docker-compose up -d --build
 ```
 
@@ -127,8 +128,8 @@ All files                                  |   99.15 |   99.62 |
  src/utils/stream-adapter.ts               |  100.00 |  100.00 |
 -------------------------------------------|---------|---------|-------------------
 ```
----
 
+---
 
 ## License
 
