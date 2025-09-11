@@ -3,15 +3,11 @@ import type { NextFunction, Response, Request } from 'express'
 import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken'
 import { ObjectId } from 'mongodb'
 
-import type { Users } from '../types/types'
-
 import { ApplicationError, throwError } from '../utils/errors.utils'
 import { UsersRepository } from '../repositories/users.repository'
 import { TokenPayloadSchema } from '../schemas/auth/auth.schemas'
 import { verifyToken } from '../services/auth/auth.service'
 import { APPLICATION_ERRORS } from '../errors/errors'
-import { getCollection } from '../utils/db'
-import { COLLECTIONS } from '../config'
 
 /**
  * Express middleware to verify and validate a JWT token.

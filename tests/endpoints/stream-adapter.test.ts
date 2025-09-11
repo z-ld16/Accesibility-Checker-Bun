@@ -8,7 +8,7 @@ import { APPLICATION_ERRORS } from '../../src/errors/errors'
 
 test('handles stream error before headers are sent', async () => {
   // fake stream
-  const fakeStream = new Readable({ read() { } })
+  const fakeStream = new Readable({ read() {} })
 
   // controller that returns our fake stream
   const controller = mock(() => Promise.resolve(fakeStream))
@@ -38,7 +38,7 @@ test('handles stream error before headers are sent', async () => {
 })
 
 test('destroys response if headers already sent', async () => {
-  const fakeStream = new Readable({ read() { } })
+  const fakeStream = new Readable({ read() {} })
   const controller = mock(() => Promise.resolve(fakeStream))
 
   const destroySpy = mock()

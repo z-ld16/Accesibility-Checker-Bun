@@ -110,6 +110,7 @@ describe('DELETE:/scan/:id', () => {
     expect(result.status).toBe(
       APPLICATION_ERRORS.GENERIC.UNHANDLED_ERROR.statusCode,
     )
+    expect(MongoClient.prototype.connect).toHaveBeenCalled()
   })
 
   it('should return unauthorized cause the token doesnt exist in db', async () => {
