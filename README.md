@@ -56,27 +56,27 @@ Tests are made following some guidelines seen in: <https://github.com/goldbergyo
 
 ### Authentication
 
-- POST /auth/login – Login a user and return JWT.
+- POST /api/auth/login – Login a user and return JWT.
 
-- POST /auth/logout – Logout a user, invalidate the JWT.
+- POST /api/auth/logout – Logout a user, invalidate the JWT.
 
 ### Users
 
-- POST /users – Create a new user.
+- POST /api/users – Create a new user.
 
 ### Scans
 
-- POST /scans/scan-url – Run accessibility scans on one or multiple URLs.
+- POST /api/scans/scan-url – Run accessibility scans on one or multiple URLs.
 
-- GET /scans – Get all scans (supports pagination: limit & offset).
+- GET /api/scans – Get all scans (supports pagination: limit & offset).
 
-- GET /scans/:id – Get a scan by its ID.
+- GET /api/scans/:id – Get a scan by its ID.
 
-- PUT /scans/:id – Re-run an accessibility scan for a specific scan.
+- PUT /api/scans/:id – Re-run an accessibility scan for a specific scan.
 
-- DELETE /scans/:id – Delete a scan by its ID.
+- DELETE /api/scans/:id – Delete a scan by its ID.
 
-- GET /scans/export – Export all scans as a CSV file.
+- GET /api/scans/export – Export all scans as a CSV file.
 
 ---
 
