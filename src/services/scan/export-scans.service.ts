@@ -18,24 +18,23 @@ import { ScanRepository } from '../../repositories/scan.respository'
  * @function exportScansCSVService
  * @returns {Promise<NodeJS.ReadableStream>} A readable stream containing the CSV data.
  */
-export const exportScansCSVService =
-  async (): Promise<NodeJS.ReadableStream> => {
-    const cursor = await ScanRepository.getCursor()
-    const stringifier = stringify({
-      header: true,
-      columns: [
-        '_id',
-        'url',
-        'createdAt',
-        'updatedAt',
-        'violationId',
-        'violationImpact',
-        'violationDescription',
-      ],
-    })
+export const exportScansCSVService = async (): Promise<Readable> => {
+  const cursor = await ScanRepository.getCursor()
+  const stringifier = stringify({
+    header: true,
+    columns: [
+      '_id',
+      'url',
+      'createdAt',
+      'updatedAt',
+      'violationId',
+      'violationImpact',
+      'violationDescription',
+    ],
+  })
 
-    return Readable.from(generateScanRows(cursor)).pipe(stringifier)
-  }
+  return Readable.from(generateScanRows(cursor)).pipe(stringifier)
+}
 
 /**
  * Async generator that produces CSV rows from a cursor of scans.

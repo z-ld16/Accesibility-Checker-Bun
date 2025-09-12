@@ -1,3 +1,5 @@
+import type { Readable } from 'node:stream'
+
 import type { UpdateScanByIdSchemas } from '../../schemas/scans/update-by-id.schema'
 import type { DeleteScanByIdSchemas } from '../../schemas/scans/delete-by-id.schema'
 import type { ScanURLSSchemas } from '../../schemas/scans/scan-urls.schema'
@@ -104,8 +106,8 @@ export const deleteScanByIdController = async (
  *
  * @async
  * @function exportScansController
- * @returns {Promise<unknown>} The exported CSV data.
+ * @returns {Promise<NodeJS.ReadableStream>} The exported CSV data.
  */
-export const exportScansController = async (): Promise<unknown> => {
+export const exportScansController = async (): Promise<Readable> => {
   return await exportScansCSVService()
 }
